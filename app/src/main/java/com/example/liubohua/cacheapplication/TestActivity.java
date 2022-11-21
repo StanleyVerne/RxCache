@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import car.wuba.saas.cache.CacheInstaller;
 import car.wuba.saas.cache.RetrofitCache;
 import car.wuba.saas.cache.RxCache;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
@@ -23,6 +25,8 @@ import rx.functions.Action1;
 
 public class TestActivity extends AppCompatActivity {
 
+
+    private static final String TAG = "dfsdf";
     private TestBean testBean;
     private Bitmap bitmap;
     private ImageView testImage;
@@ -57,52 +61,76 @@ public class TestActivity extends AppCompatActivity {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TestInerface testInerface = RetrofitCache.create(TestInerface.class);
-                testInerface.putData("testKey", bitmap, Bitmap.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        Toast.makeText(TestActivity.this, aBoolean + "", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-//                RxCache.get().putData2TwoLayer("diskKey", testBean).subscribe(new Action1<Boolean>() {
+//                TestInerface testInerface = RetrofitCache.create(TestInerface.class);
+//                testInerface.putData("testKey", bitmap, Bitmap.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Boolean>() {
 //                    @Override
 //                    public void call(Boolean aBoolean) {
 //                        Toast.makeText(TestActivity.this, aBoolean + "", Toast.LENGTH_SHORT).show();
 //                    }
 //                });
+
+                RxCache.get().putData2TwoLayer("diskKey", testBean).subscribe(new Subscriber<Boolean>() {
+                    @Override
+                    public void onCompleted() {
+                        Toast.makeText(TestActivity.this,  "fdfsdf", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                       e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+                        Log.d(TAG, "onNext: "+aBoolean);
+                    }
+
+
+                });
             }
         });
 
         loadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TestInerface testInerface = RetrofitCache.create(TestInerface.class);
-                testInerface.getData("testKey",Bitmap.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Bitmap>() {
-                    @Override
-                    public void call(Bitmap s) {
-                        if (s != null) {
-//                            Toast.makeText(TestActivity.this, s.toString(), Toast.LENGTH_SHORT).show();
-                            testImage.setImageBitmap(s);
-                        } else {
-                            Toast.makeText(TestActivity.this, "数据为null", Toast.LENGTH_SHORT).show();
-                        }
-//                        testImage.setImageBitmap(s);
-                    }
-                });
-
-
-//                RxCache.get().getDataTwoLayer("diskKey", TestBean.class).subscribe(new Action1<TestBean>() {
+//                TestInerface testInerface = RetrofitCache.create(TestInerface.class);
+//                testInerface.getData("testKey",Bitmap.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Bitmap>() {
 //                    @Override
-//                    public void call(TestBean s) {
+//                    public void call(Bitmap s) {
 //                        if (s != null) {
-//                            Toast.makeText(TestActivity.this, s.toString(), Toast.LENGTH_SHORT).show();
+////                            Toast.makeText(TestActivity.this, s.toString(), Toast.LENGTH_SHORT).show();
+//                            testImage.setImageBitmap(s);
 //                        } else {
 //                            Toast.makeText(TestActivity.this, "数据为null", Toast.LENGTH_SHORT).show();
 //                        }
 ////                        testImage.setImageBitmap(s);
 //                    }
 //                });
+
+
+                RxCache.get().getDataTwoLayer("diskKey", TestBean.class).subscribe(new Subscriber<TestBean>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(TestBean s) {
+                        if (s != null) {
+                            Toast.makeText(TestActivity.this, s.toString(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(TestActivity.this, "数据为null", Toast.LENGTH_SHORT).show();
+                        }
+//                        testImage.setImageBitmap(s);
+                    }
+
+
+                });
             }
         });
 

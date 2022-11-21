@@ -72,7 +72,9 @@ public class CacheManager {
                     return null;
                 }
             }
-        }).subscribeOn(Schedulers.io());
+        }) .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
 
 
         return observable;
@@ -99,7 +101,11 @@ public class CacheManager {
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             }
-        }).subscribeOn(Schedulers.io());
+        })
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+//                .subscribe(subscriber);
 
         return observable;
     }
